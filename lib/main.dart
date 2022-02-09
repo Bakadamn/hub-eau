@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'front_elements.dart';
+import 'models/station.dart';
 
 void main() {
   runApp(const MyApp());
@@ -95,10 +96,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
           ),
           drawer: Drawer(
-              child : Column(
-
+              child: Container(
+                  color: Colors.blueAccent,
+                  child: Column(
+                    children: [
+                      DrawerHeader(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                  "Toutes les stations",
+                                  style: TextStyle(fontSize: 30, color: Colors.white)
+                              )
+                            ],
+                          )
+                      ),
+                      Column(
+                          children: stationsWidgetsFrom(stations)
+                      )
+                    ],
+                  )
               )
           ),
+
+
           body: FlutterMap(
             options: MapOptions(
               center: LatLng(51.5, -0.09),
