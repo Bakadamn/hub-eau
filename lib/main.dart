@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hub_eau/api/api_stations.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:hub_eau/api/api_temperature.dart';
+import 'package:hub_eau/models/temperature.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'front_elements.dart';
@@ -51,7 +53,14 @@ class _MyHomePageState extends State<MyHomePage> {
     for (Station station in stations) {
       widgets.add(
         ListTile(
-          onTap: null,
+          onTap: () async {
+            Temperature? t = await ApiTemperatures.lastTemperatureAtStation(station: station);
+            if (t == null) {
+              print("No temperature");
+            } else {
+              print(t.resultat);
+            }
+          },
           title: Text(
             station.libelle!,
             style: const TextStyle(color: Colors.white)
