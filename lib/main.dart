@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hub_eau/api/api_stations.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+
+import 'models/station.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,17 +53,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<Station>? stations;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  static List<Widget> stationsWidgetsFrom(List<Station>? stations) {
+    if (stations == null) {
+      return [
+        const Text("Error: no data")
+      ];
+    }
+
+    List<Widget> widgets = [];
+    for (Station station in stations) {
+      widgets.add(
+        ListTile(
+          onTap: null,
+          title: Text(
+            station.libelle!,
+            style: const TextStyle(color: Colors.white)
+          )
+        )
+      );
+    }
+    return widgets;
+  }
+
+  void retrieveStations() async {
+    stations = await ApiStations.byDepartment(code: 76);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    retrieveStations();
+    super.initState();
   }
 
   @override
@@ -71,8 +96,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ),
       drawer: Drawer(
-        child : Column(
-
+        child: Container(
+          color: Colors.blueAccent,
+          child: Column(
+            children: [
+              DrawerHeader(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "Toutes les stations",
+                      style: TextStyle(fontSize: 30, color: Colors.white)
+                    )
+                  ],
+                )
+              ),
+              Column(
+                children: stationsWidgetsFrom(stations)
+              )
+            ],
+          )
         )
       ),
       body: FlutterMap(
@@ -85,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             subdomains: ['a', 'b', 'c'],
             attributionBuilder: (_) {
-              return Text("© OpenStreetMap contributors");
+              return const Text("© OpenStreetMap contributors");
             },
           ),
           MarkerLayerOptions(
