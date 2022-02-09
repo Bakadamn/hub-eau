@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlng/latlng.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Hub\'Eau',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -68,48 +68,41 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-        FlutterMap(
+      drawer: Drawer(
+        child : Column(
+
+        )
+      ),
+      body: FlutterMap(
         options: MapOptions(
-            center: LatLng(51.5, -0.09),
-        zoom: 13.0,
-      ),
-      layers: [
-        TileLayerOptions(
+          center: LatLng(51.5, -0.09),
+          zoom: 13.0,
+        ),
+        layers: [
+          TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c']
-        ),
-        MarkerLayerOptions(
-          markers: [
-            Marker(
-              width: 80.0,
-              height: 80.0,
-              point: LatLng(51.5, -0.09),
-              builder: (ctx) =>
-              Container(
-                child: FlutterLogo(),
+            subdomains: ['a', 'b', 'c'],
+            attributionBuilder: (_) {
+              return Text("© OpenStreetMap contributors");
+            },
+          ),
+          MarkerLayerOptions(
+            markers: [
+              Marker(
+                width: 80.0,
+                height: 80.0,
+                point: LatLng(51.5, -0.09),
+                builder: (ctx) =>
+                    Container(
+                      child: FlutterLogo(),
+                    ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );,
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+            ],
+          ),
+        ],
+      )
     );
   }
 }
