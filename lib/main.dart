@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
-
   final String title;
 
   @override
@@ -38,10 +37,22 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
 
+
+
   Widget infoStation = Container(height: 0,width: 0,);
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    void afficherInfo(){
+      showDialog(
+          context: context,
+          builder: (BuildContext buildContext){
+        return infoWindow(size, context);
+
+      });
+    }
+
     return Stack(
       children: [
         Scaffold(
@@ -78,8 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Image.asset("assets/goutte.png", fit: BoxFit.fitHeight,),
                           onTap: (){
                             setState(() {
-
-                              infoStation = infoWindow(size, context);
+                              afficherInfo();
                             });
                           },
                         ),

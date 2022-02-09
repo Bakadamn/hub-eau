@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:hub_eau/main.dart';
 import 'main.dart';
@@ -29,7 +31,7 @@ Widget infoWindow(Size screenSize, BuildContext context) {
      Align(
          alignment: Alignment.topRight,
          child:  ElevatedButton(
-             onPressed: () {widget = Container();},
+             onPressed: () {widget = Container(); Navigator.pop(context);},
              child: Icon(Icons.close))
      ),
 
