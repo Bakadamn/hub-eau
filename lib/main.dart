@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Hub\'eau'),
     );
   }
 }
@@ -41,14 +41,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   List<Station>? stations;
+  MapController mapController = MapController();
 
-  static List<Widget> stationsWidgetsFrom(List<Station>? stations) {
+  List<Widget> stationsWidgetsFrom(List<Station>? stations) {
     if (stations == null) {
       return [
         const Text("Error: no data")
       ];
     }
 
+    LatLng centerPos = LatLng(0, 0);
     List<Widget> widgets = [];
     for (Station station in stations) {
       widgets.add(
@@ -58,6 +60,11 @@ class _MyHomePageState extends State<MyHomePage> {
             if (t == null) {
               print("No temperature");
             } else {
+              setState(() {
+                afficherInfo(station);
+                Navigator.pop(context);
+                mapController.move(t.station!.location!, 13) ;
+              });
               print(t.resultat);
             }
           },
@@ -71,8 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return widgets;
   }
 
+
   void retrieveStations() async {
-    stations = await ApiStations.byDepartment(code: 76);
+    stations = await ApiStations.byRegion(code: 28);
     setState(() {});
   }
 
@@ -82,58 +90,109 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  Size size = Size(10, 10);
+
+  void afficherInfo(Station station) async {
+
+    Temperature? temp = await ApiTemperatures.lastTemperatureAtStation(station: station);
+
+    showDialog(
+        context: context,
+        builder: (BuildContext buildContext){
+          return infoWindow(size, context, temp);
+
+        });
+  }
 
   Widget infoStation = Container(height: 0,width: 0,);
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
 
-    void afficherInfo(){
-      showDialog(
-          context: context,
-          builder: (BuildContext buildContext){
-        return infoWindow(size, context);
 
-      });
+    LatLng centerPos = LatLng(0, 0);
+
+    size = MediaQuery.of(context).size;
+
+
+
+
+
+    Marker markerPerso(Station station){
+      return Marker(
+        width: 80.0,
+        height: 80.0,
+        point: station.location!,
+        builder: (ctx) =>
+            InkWell(
+              child: Image.asset("assets/goutte.png", fit: BoxFit.fitHeight,),
+              onTap: (){
+                setState(() {
+                  afficherInfo(station);
+                });
+              },
+            )
+      );
     }
+
+
+
+    List<Marker> stationsMarkerFrom(List<Station>? stations) {
+      if (stations == null) {
+        return [
+        ];
+      }
+
+      List<Marker> widgets = [];
+      for (Station station in stations) {
+        widgets.add(
+            markerPerso(station)
+        );
+      }
+      return widgets;
+    }
+
 
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
             title: Text(widget.title),
-
           ),
           drawer: Drawer(
-              child: Container(
-                  color: Colors.blueAccent,
-                  child: Column(
-                    children: [
-                      DrawerHeader(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Text(
-                                  "Toutes les stations",
-                                  style: TextStyle(fontSize: 30, color: Colors.white)
-                              )
-                            ],
-                          )
-                      ),
-                      Column(
-                          children: stationsWidgetsFrom(stations)
-                      )
-                    ],
-                  )
-              )
+            child:SingleChildScrollView(
+                child: Container(
+                    color: Colors.blueAccent,
+                    child: Column(
+                      children: [
+                        DrawerHeader(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text(
+                                    "Toutes les stations",
+                                    style: TextStyle(fontSize: 30, color: Colors.white)
+                                )
+                              ],
+                            )
+                        ),
+                        Column(
+                            children: stationsWidgetsFrom(stations)
+                        )
+                      ],
+                    )
+                )
+            )
+
           ),
 
 
           body: FlutterMap(
             options: MapOptions(
-              center: LatLng(51.5, -0.09),
+              center: centerPos,
               zoom: 13.0,
+              bounds: LatLngBounds(LatLng(49.269703, 1.803679), LatLng(50.124093, 0.127673))
             ),
+            mapController: mapController ,
             layers: [
               TileLayerOptions(
                 urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -143,22 +202,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               MarkerLayerOptions(
-                markers: [
-                  Marker(
-                    width: 80.0,
-                    height: 80.0,
-                    point: LatLng(51.5, -0.09),
-                    builder: (ctx) =>
-                        InkWell(
-                          child: Image.asset("assets/goutte.png", fit: BoxFit.fitHeight,),
-                          onTap: (){
-                            setState(() {
-                              afficherInfo();
-                            });
-                          },
-                        ),
-                  ),
-                ],
+                markers: stationsMarkerFrom(stations)
+
               ),
             ],
           )

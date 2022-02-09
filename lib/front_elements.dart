@@ -1,43 +1,35 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:hub_eau/main.dart';
+import 'package:hub_eau/models/temperature.dart';
 import 'main.dart';
 
 
 
-Widget infoWindow(Size screenSize, BuildContext context) {
+Widget infoWindow(Size screenSize, BuildContext context, Temperature? temperature) {
  Widget widget;
   widget = Align(
-  alignment: Alignment.bottomCenter,
+  alignment: Alignment.bottomLeft,
   child:  Container(
+   alignment: Alignment.center,
    height: screenSize.height/3,
    width: screenSize.width,
-   color: Colors.white,
-   child: Row(
-    children: [
-     Column(
-      mainAxisSize: MainAxisSize.max,
+   color: Colors.blueAccent,
+   child:
+     Wrap(
+      runSpacing: 10,
+      spacing: 10,
+      alignment: WrapAlignment.center,
+      direction: Axis.vertical,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-       textInfo("Nom de la station", ),
-       textInfo("Code station"),
+       textInfo("Date de prélèvement : " +temperature!.date.toString()),
+       textInfo("Température : "+temperature.resultat.toString()+"°C"),
+       textInfo("Adresse : "+temperature.station!.libelle!)
       ],
      ),
-     Column(
-      children: [
-       textInfo('Temperature')
-      ],
-     ),
-     Align(
-         alignment: Alignment.topRight,
-         child:  ElevatedButton(
-             onPressed: () {widget = Container(); Navigator.pop(context);},
-             child: Icon(Icons.close))
-     ),
 
-    ],
 
-   ),
   ),
  );
 
@@ -47,7 +39,7 @@ Widget infoWindow(Size screenSize, BuildContext context) {
 Text textInfo(String texte){
  return Text(
   texte,
-  style: TextStyle(fontSize: 11, color: Colors.black),
+  style: const TextStyle(fontSize: 16, color: Colors.white, decoration: TextDecoration.none),
  );
 
 }

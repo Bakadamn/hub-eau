@@ -7,10 +7,10 @@ class ApiStations {
   static const String baseUrl = "https://hubeau.eaufrance.fr/api/v1/temperature/station";
 
 
-  static Future<List<Station>?> byDepartment({ required int code }) async {
+  static Future<List<Station>?> byRegion({ required int code }) async {
     Request request = Request(
       "GET",
-      Uri.parse("$baseUrl?code_departement=$code")
+      Uri.parse("$baseUrl?code_region=$code")
     );
 
     StreamedResponse response = await request.send();
