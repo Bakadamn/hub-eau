@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hub_eau/api/api_stations.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -36,7 +37,40 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  List<Station>? stations;
 
+  static List<Widget> stationsWidgetsFrom(List<Station>? stations) {
+    if (stations == null) {
+      return [
+        const Text("Error: no data")
+      ];
+    }
+
+    List<Widget> widgets = [];
+    for (Station station in stations) {
+      widgets.add(
+        ListTile(
+          onTap: null,
+          title: Text(
+            station.libelle!,
+            style: const TextStyle(color: Colors.white)
+          )
+        )
+      );
+    }
+    return widgets;
+  }
+
+  void retrieveStations() async {
+    stations = await ApiStations.byDepartment(code: 76);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    retrieveStations();
+    super.initState();
+  }
 
 
   Widget infoStation = Container(height: 0,width: 0,);
